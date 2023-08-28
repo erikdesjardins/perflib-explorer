@@ -1,4 +1,4 @@
-use crate::types::Counter;
+use crate::types::{Counter, NonMaxU32};
 use crate::winapi::{decode_utf16_until_null, invoke_with_buf};
 use std::collections::HashMap;
 use windows::core::{Result, GUID, HRESULT};
@@ -23,8 +23,8 @@ pub fn of_counterset(buf: &mut Vec<u8>, counterset_id: &GUID) -> Result<Vec<Coun
             let help = help.get(&id).cloned().unwrap_or_default();
 
             let reg_info = reg_info[&id];
-            let base_counter_id = reg_info.BaseCounterId;
-            let multi_counter_id = reg_info.MultiId;
+            let base_counter_id = NonMaxU32::new(reg_info.BaseCounterId);
+            let multi_counter_id = NonMaxU32::new(reg_info.MultiId);
             let aggregate_func = reg_info.AggregateFunc;
 
             Counter {

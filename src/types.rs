@@ -1,3 +1,4 @@
+use std::fmt::{self, Debug};
 use windows::core::{Error, Result, GUID};
 use windows::Win32::Foundation::{RPC_X_ENUM_VALUE_OUT_OF_RANGE, WIN32_ERROR};
 use windows::Win32::System::Performance::{
@@ -61,8 +62,8 @@ pub struct Counter {
     pub id: u32,
     pub name: String,
     pub help: String,
-    pub base_counter_id: u32,
-    pub multi_counter_id: u32,
+    pub base_counter_id: Option<NonMaxU32>,
+    pub multi_counter_id: Option<NonMaxU32>,
     pub aggregate_func: PERF_COUNTER_AGGREGATE_FUNC,
 }
 
@@ -73,4 +74,21 @@ pub struct Counter {
 pub struct Instance {
     pub id: u32,
     pub name: String,
+}
+
+pub struct NonMaxU32(u32);
+
+impl Debug for NonMaxU32 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        Debug::fmt(&self.0, f)
+    }
+}
+
+impl NonMaxU32 {
+    pub fn new(value: u32) -> Option<Self> {
+        match value {
+            u32::MAX => None,
+            _ => Some(Self(value)),
+        }
+    }
 }
