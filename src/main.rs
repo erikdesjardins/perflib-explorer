@@ -23,7 +23,7 @@ fn main() -> Result<()> {
     for p in all {
         println!("{:?}: {}", p.id, p.name);
         for cs in p.countersets {
-            println!("    {:?}: {}", cs.id, cs.name);
+            println!("    {:?}: {}; {}", cs.id, cs.name, cs.help);
             for c in cs.counters {
                 println!("        -- {:?}: {}; {}", c.id, c.name, c.help);
             }

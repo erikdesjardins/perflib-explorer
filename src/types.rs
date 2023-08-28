@@ -16,6 +16,7 @@ pub struct Provider {
 pub struct CounterSet {
     pub id: GUID,
     pub name: String,
+    pub help: String,
     pub counters: Vec<Counter>,
     pub instances: Option<Vec<Instance>>,
 }

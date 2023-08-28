@@ -15,12 +15,14 @@ pub fn all_providers(buf: &mut Vec<u8>) -> Result<Vec<Provider>> {
         let provider_id = providers::id_from_counterset(buf, &counterset_id)?;
 
         let name = countersets::name(buf, &counterset_id)?;
+        let help = countersets::help(buf, &counterset_id)?;
         let counters = counters::of_counterset(buf, &counterset_id)?;
         let instances = instances::of_counterset(buf, &counterset_id)?;
 
         let counterset = CounterSet {
             id: counterset_id,
             name,
+            help,
             counters,
             instances,
         };
