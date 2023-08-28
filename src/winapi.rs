@@ -27,8 +27,8 @@ where
     let res = WIN32_ERROR(f(buf, &mut actual));
 
     match res {
-        ERROR_SUCCESS => return Ok(&buf[..actual.try_into().unwrap()]),
-        _ => return Err(Error::from(res)),
+        ERROR_SUCCESS => Ok(&buf[..actual.try_into().unwrap()]),
+        _ => Err(Error::from(res)),
     }
 }
 
