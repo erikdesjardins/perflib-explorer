@@ -1,9 +1,9 @@
 use windows::core::Result;
 
-mod opt;
-mod winapi;
 mod fetch;
+mod opt;
 mod types;
+mod winapi;
 
 fn main() -> Result<()> {
     let opt::Options { verbose } = clap::Parser::parse();

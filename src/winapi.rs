@@ -8,7 +8,10 @@ use windows::Win32::Foundation::{ERROR_NOT_ENOUGH_MEMORY, ERROR_SUCCESS, WIN32_E
 /// it will resize the buffer to the required size and try again.
 ///
 /// Returns the segment of the buffer containing the resulting data.
-pub fn invoke_with_buf<T>(buf: &mut Vec<T>, f: impl Fn(&mut [T], &mut u32) -> u32) -> Result<&[T]> where T: Default {
+pub fn invoke_with_buf<T>(buf: &mut Vec<T>, f: impl Fn(&mut [T], &mut u32) -> u32) -> Result<&[T]>
+where
+    T: Default,
+{
     let mut actual = 0;
 
     let res = WIN32_ERROR(f(buf, &mut actual));

@@ -16,6 +16,7 @@ pub fn all_providers(buf: &mut Vec<u8>) -> Result<Vec<Provider>> {
 
         let name = countersets::name(buf, &counterset_id)?;
         let help = countersets::help(buf, &counterset_id)?;
+        let instance_type = countersets::instance_type(buf, &counterset_id)?;
         let counters = counters::of_counterset(buf, &counterset_id)?;
         let instances = instances::of_counterset(buf, &counterset_id)?;
 
@@ -23,6 +24,7 @@ pub fn all_providers(buf: &mut Vec<u8>) -> Result<Vec<Provider>> {
             id: counterset_id,
             name,
             help,
+            instance_type,
             counters,
             instances,
         };
