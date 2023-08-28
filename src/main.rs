@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use windows::core::Result;
 
 mod fetch;
@@ -16,9 +18,13 @@ fn main() -> Result<()> {
         })
         .init();
 
+    let start = Instant::now();
+
     let mut buf = Vec::new();
 
     let all = fetch::all_providers(&mut buf)?;
+
+    log::info!("Load completed at T + {}ms", start.elapsed().as_millis());
 
     for p in all {
         println!("{:?}: {}", p.id, p.name);
@@ -35,6 +41,8 @@ fn main() -> Result<()> {
         }
         println!();
     }
+
+    log::info!("Print completed at T + {}ms", start.elapsed().as_millis());
 
     Ok(())
 }
