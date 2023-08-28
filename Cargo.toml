@@ -1,0 +1,12 @@
+[package]
+name = "perflib-explorer"
+version = "0.1.0"
+description = "Tools for fetching countersets, counters, instances, and data from Windows V2 performance counter providers."
+edition = "2021"
+
+[dependencies]
+
+[profile.release]
+panic = "abort"
+lto = true
+codegen-units = 1
