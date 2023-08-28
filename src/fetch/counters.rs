@@ -1,4 +1,4 @@
-use crate::types::{Counter, NonMaxU32};
+use crate::types::{AggregateFunc, Counter, NonMaxU32};
 use crate::winapi::{decode_utf16_until_null, invoke_with_buf};
 use std::collections::HashMap;
 use windows::core::{Result, GUID, HRESULT};
@@ -14,29 +14,28 @@ pub fn of_counterset(buf: &mut Vec<u8>, counterset_id: &GUID) -> Result<Vec<Coun
     let help = help_strings_of_all_in_counterset(buf, counterset_id)?;
     let reg_info = reg_info_of_all_in_counterset(buf, counterset_id)?;
 
+    let mut counters = Vec::with_capacity(names.len());
+
     // Since there can be duplicate ids (and technically duplicate names, although I don't see that),
     // we can't just iterate over reg_info ids here--we need to iterate over names.
-    let mut counters = names
-        .into_iter()
-        .map(|(id, name)| {
-            // Help strings may not exist for all counters.
-            let help = help.get(&id).cloned().unwrap_or_default();
+    for (id, name) in names {
+        // Help strings may not exist for all counters.
+        let help = help.get(&id).cloned().unwrap_or_default();
 
-            let reg_info = reg_info[&id];
-            let base_counter_id = NonMaxU32::new(reg_info.BaseCounterId);
-            let multi_counter_id = NonMaxU32::new(reg_info.MultiId);
-            let aggregate_func = reg_info.AggregateFunc;
+        let reg_info = reg_info[&id];
+        let base_counter_id = NonMaxU32::new(reg_info.BaseCounterId);
+        let multi_counter_id = NonMaxU32::new(reg_info.MultiId);
+        let aggregate_func = AggregateFunc::from_bits(reg_info.AggregateFunc)?;
 
-            Counter {
-                id,
-                name,
-                help,
-                base_counter_id,
-                multi_counter_id,
-                aggregate_func,
-            }
-        })
-        .collect::<Vec<_>>();
+        counters.push(Counter {
+            id,
+            name,
+            help,
+            base_counter_id,
+            multi_counter_id,
+            aggregate_func,
+        });
+    }
 
     counters.sort_by_key(|c| c.id);
 

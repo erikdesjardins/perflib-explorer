@@ -2,7 +2,8 @@ use std::fmt::{self, Debug};
 use windows::core::{Error, Result, GUID};
 use windows::Win32::Foundation::{RPC_X_ENUM_VALUE_OUT_OF_RANGE, WIN32_ERROR};
 use windows::Win32::System::Performance::{
-    PERF_COUNTERSET_MULTI_INSTANCES, PERF_COUNTERSET_SINGLE_AGGREGATE,
+    PERF_AGGREGATE_AVG, PERF_AGGREGATE_MAX, PERF_AGGREGATE_MIN, PERF_AGGREGATE_TOTAL,
+    PERF_AGGREGATE_UNDEFINED, PERF_COUNTERSET_MULTI_INSTANCES, PERF_COUNTERSET_SINGLE_AGGREGATE,
     PERF_COUNTERSET_SINGLE_INSTANCE, PERF_COUNTER_AGGREGATE_FUNC,
 };
 
@@ -64,7 +65,36 @@ pub struct Counter {
     pub help: String,
     pub base_counter_id: Option<NonMaxU32>,
     pub multi_counter_id: Option<NonMaxU32>,
-    pub aggregate_func: PERF_COUNTER_AGGREGATE_FUNC,
+    pub aggregate_func: AggregateFunc,
+}
+
+#[derive(Debug)]
+#[repr(u32)]
+pub enum AggregateFunc {
+    Undefined = PERF_AGGREGATE_UNDEFINED.0,
+    Total = PERF_AGGREGATE_TOTAL.0,
+    Avg = PERF_AGGREGATE_AVG.0,
+    Min = PERF_AGGREGATE_MIN.0,
+    Max = PERF_AGGREGATE_MAX,
+}
+
+impl AggregateFunc {
+    pub fn from_bits(bits: PERF_COUNTER_AGGREGATE_FUNC) -> Result<Self> {
+        const UNDEFINED: u32 = AggregateFunc::Undefined as _;
+        const TOTAL: u32 = AggregateFunc::Total as _;
+        const AVG: u32 = AggregateFunc::Avg as _;
+        const MIN: u32 = AggregateFunc::Min as _;
+        const MAX: u32 = AggregateFunc::Max as _;
+
+        Ok(match bits.0 {
+            UNDEFINED => Self::Undefined,
+            TOTAL => Self::Total,
+            AVG => Self::Avg,
+            MIN => Self::Min,
+            MAX => Self::Max,
+            _ => return Err(Error::from(WIN32_ERROR(RPC_X_ENUM_VALUE_OUT_OF_RANGE as _))),
+        })
+    }
 }
 
 /// An instance of a counterset.
