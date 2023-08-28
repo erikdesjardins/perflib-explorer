@@ -27,6 +27,11 @@ fn main() -> Result<()> {
             for c in cs.counters {
                 println!("        -- {:?}: {}; {}", c.id, c.name, c.help);
             }
+            if let Some(instances) = cs.instances {
+                for i in instances {
+                    println!("        >> {:?}: {}", i.id, i.name);
+                }
+            }
         }
         println!();
     }
